@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Minesweeper</title>
+        <style>
+            body {
+                font-family: system-ui;
+            }
+            #myCanvas {
+                background-color: rgb(74, 74, 97);
+            }
+            p {
+                margin: 10px;
+            }
+            .laatikko {
+                clear: both;
+                clear: both;
+                display: flex;
+                justify-content: center;
+                margin: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="laatikko">
+            <p>Set grid size:</p>
+            <input id="myInput">
+            <button id="myBtn">Update</button>
+            <button id="more">+1</button>
+            <button id="less">-1</button>
+            <p id="size"></p>
+        </div>
+        <div class="laatikko">
+            <p id="teksti"></p>
+            <p></p>
+        </div>
+       <div class="laatikko">
+        <canvas id="myCanvas"></canvas>
+       </div>
+    </body>
+    <script src="script.js"></script>
+    <script src="test.js"></script>
+</html>
