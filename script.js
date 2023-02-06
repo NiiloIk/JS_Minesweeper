@@ -9,7 +9,7 @@ const sizeTxt = document.getElementById("size");
 
 let tileWidth = 20;
 let tiles = 10;
-let mines, CheckedPositions, adjacentMineList = [];
+let mines, CheckedPositions, adjacentMineList, flaggedPositions = [];
 let cursorXPosition, cursorYPosition;
 let startCheck, loseCheck;
 
@@ -23,6 +23,7 @@ function start()
     sizeTxt.innerHTML = tiles + "x" + tiles;
     CheckedPositions = [];
     adjacentMineList = [];
+    flaggedPositions = [];
     mines = [];
     draw();
     startCheck = true;
@@ -72,6 +73,11 @@ function draw()
             {
                 context.fillStyle = "red";
                 context.fillRect(x + h/4, y + h/4, (h - v) / 2, (h - v) / 2);
+            }
+            else if (flaggedPositions.includes(logicalPosition))
+            {
+                context.fillStyle = "black";
+                context.fillRect(x + h/3, y + h/4, (h - v) / 4, (h - v) / 2)
             }
         }
     }
@@ -158,7 +164,7 @@ function checkAdjacentNumbers(number)
                 else
                 {
                     CheckedPositions.push(tile);
-                    if (adjacentMineList[tile] == 0)
+                    if (adjacentMineList[tile] == 0 && !startCheck)
                     {
                         checkAdjacentNumbers(tile);
                     }
@@ -171,30 +177,31 @@ function checkAdjacentNumbers(number)
 
 // Palauttaa canvaksella painamisen sijainnin ja vie sen seuraavaan funktioon.
 canvas.addEventListener('mouseup', function(e) {
-    getCursorPosition(e);
+    const rect = canvas.getBoundingClientRect();
+    x = e.clientX - rect.left;
+    y = e.clientY - rect.top;
+    let pos = checkTile(x, y);
+    if(e.button == 0) {
+        leftClick(pos);
+    } else if (e.button == 2)
+    {
+        flag(pos);
+    }
+    draw();
 })
 
-// Tarkastaa mistä tiilistä on painettu.
-function getCursorPosition(event) {
-    const rect = canvas.getBoundingClientRect();
-    x = event.clientX - rect.left;
-    y = event.clientY - rect.top;
-    let pos = checkTile(x, y);
-    Press(pos);
-    draw();
-    
-}
 
 // Kun pelaaja painaa solusta, niin tapahtuu jotain.
-function Press(pos)
+function leftClick(pos)
 {
     // Jos pelaaja painaa ensimmäistä kertaa, niin miinat asetetaan kentälle yms.
     if (startCheck){
-        CheckedPositions.push(pos);
+        checkAdjacentNumbers(pos);
         setMines();
+        CheckedPositions = [];
+        startCheck = false;
         checkAdjacentMineAmount();
         checkAdjacentNumbers(pos);
-        startCheck = false;
     }
     // Jos tietystä kohtaa on jo painettu, mitään ei tapahdu.
     if (CheckedPositions.includes(pos))
@@ -217,6 +224,16 @@ function Press(pos)
     if (tiles * tiles == CheckedPositions.length + mines.length)
     {
         teksti.innerHTML = "You won."
+    }
+}
+function flag(pos) {
+    if (!flaggedPositions.includes(pos))
+    {
+        flaggedPositions.push(pos);
+    }
+    else{
+        let index = flaggedPositions.indexOf(pos);
+        flaggedPositions.splice(index, 1);
     }
 }
 
